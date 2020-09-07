@@ -1,5 +1,6 @@
 package cn.how2j.diytomcat;
 
+import cn.how2j.diytomcat.catalina.Context;
 import cn.how2j.diytomcat.http.Request;
 import cn.how2j.diytomcat.http.Response;
 import cn.how2j.diytomcat.util.Constant;
@@ -18,11 +19,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class Bootstrap {
+    public static Map<String,Context> contextMap = new HashMap<>();
+
     public static void main(String[] args){
         try {
             logJVM();
@@ -44,11 +48,14 @@ public class Bootstrap {
                             if(null == uri)
                                 return;
                             System.out.println(uri);
+
+                            Context context = request.getContext();
+
                             if("/".equals(uri)){
                                 String html = "Hello DIY Tomcat from how2j.cn";
                             }else{
                                 String fileName = StrUtil.removePrefix(uri,"/");
-                                File file = FileUtil.file(Constant.rootFolder,fileName);
+                                File file = FileUtil.file(context.getDocBase());
                                 if(file.exists()){
                                     String fileContent = FileUtil.readUtf8String(file);
                                     response.getWriter().println(fileContent);
@@ -72,6 +79,27 @@ public class Bootstrap {
             LogFactory.get().error(e);
             e.printStackTrace();
         }
+    }
+
+    private static void scanContextsOnWebAppsFolder(){
+        File[] folders = Constant.webappsFolder.listFiles();
+        for(File folder:folders){
+            if(!folder.isDirectory())
+                continue;
+            loadContext(folder);
+        }
+    }
+
+    private static void loadContext(File folder) {
+        String path = folder.getName();
+        if("ROOT".equals(path))
+            path = "/";
+        else
+            path = "/" + path;
+        String docBase = folder.getAbsolutePath();
+        Context context = new Context(path,docBase);
+
+        contextMap.put(context.getPath(),context);
     }
 
     private static void logJVM() {

@@ -30,19 +30,19 @@ public class TestTomcat {
         }
     }
 
-    @Test
+    /*@Test
     public void testHelloTomcat(){
         String html = getContentString("/");
         Assert.assertEquals(html,"Hello DIY Tomcat from how2j.cn");
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void testaHtml(){
         String html = getContentString("/a.html");
         Assert.assertEquals(html,"Hello DIY Tomcat from a.html");
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void textTimeConsumeHtml() throws InterruptedException{
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(20,20,60, TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(10));
         TimeInterval timeInterval = DateUtil.timer();
@@ -58,6 +58,12 @@ public class TestTomcat {
         threadPool.awaitTermination(1,TimeUnit.HOURS);
         long duration = timeInterval.intervalMs();
         Assert.assertTrue(duration < 3000);
+    }*/
+
+    @Test
+    public void testaIndex(){
+        String html = getContentString("/a/index.html");
+        Assert.assertEquals(html,"Hello DIY Tomcat from index.html@a");
     }
 
     private String getContentString(String uri){
