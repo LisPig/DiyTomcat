@@ -3,6 +3,7 @@ package cn.how2j.diytomcat;
 import cn.how2j.diytomcat.http.Request;
 import cn.how2j.diytomcat.http.Response;
 import cn.how2j.diytomcat.util.Constant;
+import cn.how2j.diytomcat.util.ThreadPoolUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -33,38 +34,42 @@ public class Bootstrap {
             ServerSocket ss = new ServerSocket(port);
             while (true){
                 Socket s = ss.accept();
-                Request request = new Request(s);
-                System.out.println("浏览器的输入信息：\r\n"+request.getRequestString());
-                System.out.println("uri:"+request.getUri());
+                Runnable r = new Runnable(){
+                    @Override
+                    public void run(){
+                        try {
+                            Request request = new Request(s);
+                            Response response = new Response();
+                            String uri = request.getUri();
+                            if(null == uri)
+                                return;
+                            System.out.println(uri);
+                            if("/".equals(uri)){
+                                String html = "Hello DIY Tomcat from how2j.cn";
+                            }else{
+                                String fileName = StrUtil.removePrefix(uri,"/");
+                                File file = FileUtil.file(Constant.rootFolder,fileName);
+                                if(file.exists()){
+                                    String fileContent = FileUtil.readUtf8String(file);
+                                    response.getWriter().println(fileContent);
 
-                Response response = new Response();
-
-                String uri = request.getUri();
-                if(null==uri)
-                    continue;
-                System.out.println(uri);
-                if("/".equals(uri)){
-                    String html = "Hello DIY Tomcat from how2j.cn";
-                    response.getWriter().println(html);
-                }else{
-                    String fileName = StrUtil.removePrefix(uri,"/");
-                    File file = FileUtil.file(Constant.rootFolder,fileName);
-                    if(file.exists()){
-                        String fileContent = FileUtil.readUtf8String(file);
-                        response.getWriter().println(fileContent);
-                        if(fileName.equals("timeConsume.html")){
-                            ThreadUtil.sleep(1000);
+                                    if(fileName.equals("timeConsume.html"))
+                                        ThreadUtil.sleep(1000);
+                                }else{
+                                    response.getWriter().println("File Not Found");
+                                }
+                            }
+                            handle200(s,response);
+                        }catch (IOException e){
+                            e.printStackTrace();
                         }
-                    }else{
-                        response.getWriter().println("File Not Found");
                     }
-                }
-
-
-                handle200(s,response);
+                };
+                ThreadPoolUtil.run(r);
 
             }
         }catch (IOException e){
+            LogFactory.get().error(e);
             e.printStackTrace();
         }
     }
