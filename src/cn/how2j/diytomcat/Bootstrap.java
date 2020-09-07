@@ -4,6 +4,7 @@ import cn.how2j.diytomcat.http.Request;
 import cn.how2j.diytomcat.http.Response;
 import cn.how2j.diytomcat.util.Constant;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NetUtil;
 import cn.hutool.core.util.StrUtil;
@@ -51,6 +52,9 @@ public class Bootstrap {
                     if(file.exists()){
                         String fileContent = FileUtil.readUtf8String(file);
                         response.getWriter().println(fileContent);
+                        if(fileName.equals("timeConsume.html")){
+                            ThreadUtil.sleep(1000);
+                        }
                     }else{
                         response.getWriter().println("File Not Found");
                     }
