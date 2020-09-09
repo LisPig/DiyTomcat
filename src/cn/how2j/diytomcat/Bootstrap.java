@@ -3,6 +3,7 @@ package cn.how2j.diytomcat;
 import cn.how2j.diytomcat.catalina.Context;
 import cn.how2j.diytomcat.catalina.Engine;
 import cn.how2j.diytomcat.catalina.Host;
+import cn.how2j.diytomcat.catalina.Service;
 import cn.how2j.diytomcat.http.Request;
 import cn.how2j.diytomcat.http.Response;
 import cn.how2j.diytomcat.util.Constant;
@@ -26,7 +27,8 @@ public class Bootstrap {
     public static void main(String[] args) {
         try {
             logJVM();
-            Engine engine = new Engine();
+            Service service  = new Service();
+            //Engine engine = new Engine();
             //Host host = new Host();
             int port = 18080;
 
@@ -38,7 +40,7 @@ public class Bootstrap {
                     @Override
                     public void run() {
                         try {
-                            Request request = new Request(s,engine);
+                            Request request = new Request(s,service);
                             Response response = new Response();
                             String uri = request.getUri();
                             if(null==uri)

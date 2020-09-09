@@ -29,7 +29,14 @@ public class ServerXMLUtil {
         return result;
     }
 
-    public static String getHostName(){
+    /*public static String getHostName(){
+        String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
+        Document d = Jsoup.parse(xml);
+
+        Element host = d.select("Host").first();
+        return host.attr("name");
+    }*/
+    public static String getServiceName(){
         String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
         Document d = Jsoup.parse(xml);
 

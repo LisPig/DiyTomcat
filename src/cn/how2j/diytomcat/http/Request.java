@@ -4,6 +4,7 @@ import cn.how2j.diytomcat.Bootstrap;
 import cn.how2j.diytomcat.catalina.Context;
 import cn.how2j.diytomcat.catalina.Engine;
 import cn.how2j.diytomcat.catalina.Host;
+import cn.how2j.diytomcat.catalina.Service;
 import cn.how2j.diytomcat.util.MiniBrowser;
 import cn.hutool.core.util.StrUtil;
 
@@ -18,10 +19,12 @@ public class Request {
     private Context context;
     private Host host;
     private Engine engine;
-    public Request(Socket socket,Engine engine) throws IOException{
+    private Service service;
+    public Request(Socket socket,Service service) throws IOException{
         this.socket = socket;
         //this.host = host;
-        this.engine = engine;
+        //this.engine = engine;
+        this.service = service;
         parseHttpRequest();
         if(StrUtil.isEmpty(requestString))
             return;
