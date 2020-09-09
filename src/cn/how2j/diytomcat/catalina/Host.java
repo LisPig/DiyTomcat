@@ -11,6 +11,7 @@ import java.util.Map;
 public class Host {
     private String name;
     private Map<String,Context> contextMap;
+    private Engine engine;
 
 
     public String getName() {
@@ -29,9 +30,10 @@ public class Host {
         this.contextMap = contextMap;
     }
 
-    public Host(){
+    public Host(String name,Engine engine){
         this.contextMap = new HashMap<>();
         this.name = ServerXMLUtil.getHostName();
+        this.engine = engine;
         scanContextsOnWebAppsFolder();
         scanContextsInServerXML();
     }
