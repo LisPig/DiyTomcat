@@ -32,7 +32,7 @@ public class Host {
 
     public Host(String name,Engine engine){
         this.contextMap = new HashMap<>();
-        this.name = ServerXMLUtil.getHostName();
+        this.name = name;
         this.engine = engine;
         scanContextsOnWebAppsFolder();
         scanContextsInServerXML();
