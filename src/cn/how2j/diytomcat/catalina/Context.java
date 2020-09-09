@@ -8,7 +8,7 @@ public class Context {
     private String path;
     private String docBase;
 
-    public Context(String path,String docBase){
+    public Context(String path, String docBase) {
         TimeInterval timeInterval = DateUtil.timer();
         this.path = path;
         this.docBase = docBase;
@@ -16,20 +16,19 @@ public class Context {
         LogFactory.get().info("Deployment of web application directory {} has finished in {} ms", this.docBase,timeInterval.intervalMs());
     }
 
-    public String getPath(){
+    public String getPath() {
         return path;
     }
 
-    public void setPath(String path){
+    public void setPath(String path) {
         this.path = path;
     }
 
-    public String getDocBase(){
+    public String getDocBase() {
         return docBase;
     }
 
-    public void setDocBase(String docBase){
+    public void setDocBase(String docBase) {
         this.docBase = docBase;
     }
 }
-
