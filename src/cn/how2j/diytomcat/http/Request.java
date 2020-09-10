@@ -13,17 +13,14 @@ import java.io.InputStream;
 import java.net.Socket;
 
 public class Request {
+
     private String requestString;
     private String uri;
     private Socket socket;
     private Context context;
-    private Host host;
-    private Engine engine;
     private Service service;
-    public Request(Socket socket,Service service) throws IOException{
+    public Request(Socket socket, Service service) throws IOException {
         this.socket = socket;
-        //this.host = host;
-        //this.engine = engine;
         this.service = service;
         parseHttpRequest();
         if(StrUtil.isEmpty(requestString))
@@ -31,39 +28,48 @@ public class Request {
         parseUri();
         parseContext();
         if(!"/".equals(context.getPath()))
-            uri = StrUtil.removePrefix(uri,context.getPath());
+            uri = StrUtil.removePrefix(uri, context.getPath());
+
     }
 
-    private void parseContext(){
-        String path = StrUtil.subBetween(uri,"/","/");
-        if(null == path)
+    private void parseContext() {
+        String path = StrUtil.subBetween(uri, "/", "/");
+        if (null == path)
             path = "/";
         else
             path = "/" + path;
 
+        Engine engine = service.getEngine();
+
         context = engine.getDefaultHost().getContext(path);
-        if(null == context)
+        if (null == context)
             context = engine.getDefaultHost().getContext("/");
     }
 
-    private void parseHttpRequest() throws IOException{
+    private void parseHttpRequest() throws IOException {
         InputStream is = this.socket.getInputStream();
         byte[] bytes = MiniBrowser.readBytes(is);
-        requestString = new String(bytes,"utf-8");
+        requestString = new String(bytes, "utf-8");
     }
 
-    private void parseUri(){
+    private void parseUri() {
         String temp;
-        temp = StrUtil.subBetween(requestString," ","");
-        if(!StrUtil.contains(temp,'?')){
+
+        temp = StrUtil.subBetween(requestString, " ", " ");
+        if (!StrUtil.contains(temp, '?')) {
             uri = temp;
             return;
         }
-        temp = StrUtil.subBefore(temp,'?',false);
+        temp = StrUtil.subBefore(temp, '?', false);
         uri = temp;
     }
 
-    public String getUri(){
+    public Context getContext() {
+        return context;
+    }
+
+
+    public String getUri() {
         return uri;
     }
 
@@ -71,7 +77,4 @@ public class Request {
         return requestString;
     }
 
-    public Context getContext() {
-        return context;
-    }
 }

@@ -15,4 +15,8 @@ public class Service {
     public Engine getEngine(){
         return engine;
     }
+
+    public Server getServer() {
+        return server;
+    }
 }

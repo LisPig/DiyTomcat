@@ -10,61 +10,55 @@ import java.util.Map;
 
 public class Host {
     private String name;
-    private Map<String,Context> contextMap;
+    private Map<String, Context> contextMap;
     private Engine engine;
+    public Host(String name, Engine engine){
+        this.contextMap = new HashMap<>();
+        this.name =  name;
+        this.engine = engine;
 
+        scanContextsOnWebAppsFolder();
+        scanContextsInServerXML();
+
+    }
 
     public String getName() {
         return name;
-    }
-
-    public Context getContext(String path) {
-        return contextMap.get(path);
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setContextMap(Map<String, Context> contextMap) {
-        this.contextMap = contextMap;
+    private  void scanContextsInServerXML() {
+        List<Context> contexts = ServerXMLUtil.getContexts();
+        for (Context context : contexts) {
+            contextMap.put(context.getPath(), context);
+        }
     }
 
-    public Host(String name,Engine engine){
-        this.contextMap = new HashMap<>();
-        this.name = name;
-        this.engine = engine;
-        scanContextsOnWebAppsFolder();
-        scanContextsInServerXML();
-    }
-
-    private void scanContextsOnWebAppsFolder() {
+    private  void scanContextsOnWebAppsFolder() {
         File[] folders = Constant.webappsFolder.listFiles();
-        for(File folder : folders){
-            if(!folder.isDirectory())
+        for (File folder : folders) {
+            if (!folder.isDirectory())
                 continue;
             loadContext(folder);
         }
     }
-
-    private void loadContext(File folder) {
+    private  void loadContext(File folder) {
         String path = folder.getName();
-        if("ROOT".equals(path))
+        if ("ROOT".equals(path))
             path = "/";
         else
-            path = "/"+path;
+            path = "/" + path;
 
         String docBase = folder.getAbsolutePath();
         Context context = new Context(path,docBase);
-        contextMap.put(context.getPath(),context);
+
+        contextMap.put(context.getPath(), context);
     }
 
-    private void scanContextsInServerXML() {
-        List<Context> contexts = ServerXMLUtil.getContexts();
-        for(Context context : contexts){
-            contextMap.put(context.getPath(),context);
-        }
+    public Context getContext(String path) {
+        return contextMap.get(path);
     }
-
-
 }

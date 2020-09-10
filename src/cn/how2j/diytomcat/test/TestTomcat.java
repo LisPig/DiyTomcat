@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import static cn.how2j.diytomcat.util.MiniBrowser.getContentString;
 
 public class TestTomcat {
-    private static int port = 18080;
+    private static int port = 18081;
     private static String ip = "127.0.0.1";
     @BeforeClass
     public static void byforeClass(){
@@ -75,9 +75,26 @@ public class TestTomcat {
         Assert.assertEquals(html,"Hello DIY Tomcat from index.html@b");
     }
 
+    @Test
+    public void test404(){
+        String response = getHttpString("/not_exist.html");
+        containAssert(response,"HTTP/1.1 404 Not Found");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
         return content;
+    }
+
+    private String getHttpString(String uri){
+        String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
+        String http = MiniBrowser.getHttpString(url);
+        return http;
+    }
+
+    private void containAssert(String html,String string){
+        boolean match = StrUtil.containsAny(html,string);
+        Assert.assertTrue(match);
     }
 }

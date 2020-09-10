@@ -33,7 +33,7 @@ public class Server {
 
     private void init() {
         try {
-            int port = 18080;
+            int port = 18081;
             ServerSocket ss = new ServerSocket(port);
 
             while(true) {
@@ -68,12 +68,21 @@ public class Server {
 
                                 }
                                 else{
-                                    response.getWriter().println("File Not Found");
+                                    handle404(s,uri);
+                                    return;
+                                    //response.getWriter().println("File Not Found");
                                 }
                             }
                             handle200(s, response);
                         } catch (IOException e) {
                             e.printStackTrace();
+                        }finally {
+                            try {
+                                if(!s.isClosed())
+                                    s.close();
+                            }catch (IOException e){
+                                e.printStackTrace();
+                            }
                         }
                     }
                 };
@@ -118,6 +127,14 @@ public class Server {
 
         OutputStream os = s.getOutputStream();
         os.write(responseBytes);
-        s.close();
+        //s.close();
+    }
+
+    protected void handle404(Socket s,String uri)throws IOException{
+        OutputStream os = s.getOutputStream();
+        String responseText = StrUtil.format(Constant.textFormat_404,uri,uri);
+        responseText = Constant.response_head_404 + responseText;
+        byte[] responseByte = responseText.getBytes("utf-8");
+        os.write(responseByte);
     }
 }
