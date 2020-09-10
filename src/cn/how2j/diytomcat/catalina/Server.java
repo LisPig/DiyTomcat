@@ -8,6 +8,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.system.SystemUtil;
 
@@ -75,7 +76,8 @@ public class Server {
                             }
                             handle200(s, response);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LogFactory.get().error(e);
+                            handle500(s,e);
                         }finally {
                             try {
                                 if(!s.isClosed())
@@ -136,5 +138,30 @@ public class Server {
         responseText = Constant.response_head_404 + responseText;
         byte[] responseByte = responseText.getBytes("utf-8");
         os.write(responseByte);
+    }
+
+    protected void handle500(Socket s,Exception e){
+        try {
+            OutputStream os = s.getOutputStream();
+            StackTraceElement stes[] = e.getStackTrace();
+            StringBuffer sb = new StringBuffer();
+            sb.append(e.toString());
+            sb.append("\r\n");
+            for(StackTraceElement ste : stes){
+                sb.append("\t");
+                sb.append(ste.toString());
+                sb.append("\r\n");
+            }
+            String msg = e.getMessage();
+            if(null != msg && msg.length() > 20)
+                msg = msg.substring(0,19);
+
+            String text = StrUtil.format(Constant.textFormat_500,msg,e.toString(),sb.toString());
+            text = Constant.response_head_500 + text;
+            byte[] responseBytes = text.getBytes("utf-8");
+            os.write(responseBytes);
+        }catch (IOException e1){
+            e1.printStackTrace();
+        }
     }
 }
