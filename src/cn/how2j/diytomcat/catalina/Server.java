@@ -4,6 +4,7 @@ import cn.how2j.diytomcat.http.Request;
 import cn.how2j.diytomcat.http.Response;
 import cn.how2j.diytomcat.util.Constant;
 import cn.how2j.diytomcat.util.ThreadPoolUtil;
+import cn.how2j.diytomcat.util.WebXMLUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -51,34 +52,35 @@ public class Server {
                             System.out.println("uri:"+uri);
 
                             Context context = request.getContext();
-
+                            if("/500.html".equals(uri)){
+                                throw new Exception("this is a deliberately created exception");
+                            }
                             if("/".equals(uri)){
-                                String html = "Hello DIY Tomcat from how2j.cn";
-                                response.getWriter().println(html);
+                                uri = WebXMLUtil.getWelComeFile(request.getContext());
+                            }
+
+                            String fileName = StrUtil.removePrefix(uri, "/");
+                            File file = FileUtil.file(context.getDocBase(),fileName);
+                            if(file.exists()){
+                                String fileContent = FileUtil.readUtf8String(file);
+                                response.getWriter().println(fileContent);
+
+                                if(fileName.equals("timeConsume.html")){
+                                    ThreadUtil.sleep(1000);
+                                }
+
                             }
                             else{
-                                String fileName = StrUtil.removePrefix(uri, "/");
-                                File file = FileUtil.file(context.getDocBase(),fileName);
-                                if(file.exists()){
-                                    String fileContent = FileUtil.readUtf8String(file);
-                                    response.getWriter().println(fileContent);
-
-                                    if(fileName.equals("timeConsume.html")){
-                                        ThreadUtil.sleep(1000);
-                                    }
-
-                                }
-                                else{
-                                    handle404(s,uri);
-                                    return;
-                                    //response.getWriter().println("File Not Found");
-                                }
+                                handle404(s,uri);
+                                return;
                             }
                             handle200(s, response);
                         } catch (IOException e) {
                             LogFactory.get().error(e);
                             handle500(s,e);
-                        }finally {
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        } finally {
                             try {
                                 if(!s.isClosed())
                                     s.close();

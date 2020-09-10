@@ -29,17 +29,20 @@ public class Request {
         parseContext();
         if(!"/".equals(context.getPath()))
             uri = StrUtil.removePrefix(uri, context.getPath());
-
+            if(StrUtil.isEmpty(uri))
+                uri = "/";
     }
 
     private void parseContext() {
+        Engine engine = service.getEngine();
+        context = engine.getDefaultHost().getContext(uri);
+        if(null != context)
+            return;
         String path = StrUtil.subBetween(uri, "/", "/");
         if (null == path)
             path = "/";
         else
             path = "/" + path;
-
-        Engine engine = service.getEngine();
 
         context = engine.getDefaultHost().getContext(path);
         if (null == context)
