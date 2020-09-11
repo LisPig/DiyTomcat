@@ -4,6 +4,7 @@ import cn.how2j.diytomcat.http.Request;
 import cn.how2j.diytomcat.http.Response;
 import cn.how2j.diytomcat.util.Constant;
 import cn.how2j.diytomcat.util.WebXMLUtil;
+import cn.how2j.diytomcat.webappservlet.HelloServlet;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -26,6 +27,11 @@ public class HttpProcessor {
 
             if("/500.html".equals(uri)){
                 throw new Exception("this is a deliberately created exception");
+            }
+
+            if("/hello".equals(uri)){
+                HelloServlet helloServlet = new HelloServlet();
+                helloServlet.doGet(request,response);
             }
 
             if("/".equals(uri))

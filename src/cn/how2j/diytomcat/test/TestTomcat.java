@@ -104,6 +104,12 @@ public class TestTomcat {
     }
 
     @Test
+    public void testHello(){
+        String html = getContentString("/hello");
+        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet");
+    }
+
+    @Test
     public void testPDF(){
         String uri = "/etf.pdf";
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
