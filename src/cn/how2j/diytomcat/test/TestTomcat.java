@@ -5,15 +5,18 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.util.NetUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static cn.how2j.diytomcat.util.MiniBrowser.getContentBytes;
 import static cn.how2j.diytomcat.util.MiniBrowser.getContentString;
 
 public class TestTomcat {
@@ -91,6 +94,23 @@ public class TestTomcat {
     public void testaTxt(){
         String response = getHttpString("/a.txt");
         containAssert(response,"Content-Type:text/plain");
+    }
+
+    @Test
+    public void testPNG(){
+        byte[] bytes = getContentBytes("/logo.png");
+        int pngFileLength = 1672;
+        Assert.assertEquals(pngFileLength,bytes.length);
+    }
+
+    @Test
+    public void testPDF(){
+        String uri = "/etf.pdf";
+        String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        HttpUtil.download(url,baos,true);
+        int pdfFileLength = 3590775;
+        Assert.assertEquals(pdfFileLength,baos.toByteArray().length);
     }
 
     private String getContentString(String uri){
